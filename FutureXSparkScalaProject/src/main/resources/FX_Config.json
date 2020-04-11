@@ -1,0 +1,15 @@
+{
+  "header": {
+    "created_by": "futurex",
+    "created_date": "20200115"
+  },
+  "body": {
+    "pg_target_table": "futureschema.futurex_course",
+    "replace_null_value": {
+      "course_id": "NO",
+      "course_name": "NO",
+      "author_name": "YES",
+      "no_of_reviews": "NO"
+    }
+  }
+}
