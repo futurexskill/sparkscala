@@ -6,13 +6,15 @@ import org.slf4j.LoggerFactory
 object SparkCommon {
   private val logger = LoggerFactory.getLogger(getClass.getName)
 
-  def createSparkSession(): Option[SparkSession] = {
+  def createSparkSession(env_name : String): Option[SparkSession] = {
     try {
       // Create a Spark Session
       // For Windows
       logger.info("createSparkSession() started")
-
-      System.setProperty("hadoop.home.dir", "C:\\winutils")
+      if (env_name == "dev") {
+        logger.info("Environment is Dev. Setting Hadoop Home")
+        System.setProperty("hadoop.home.dir", "C:\\winutils")
+      }
       // .config("spark.sql.warehouse.dir",warehouseLocation).enableHiveSupport()
 
       val spark = SparkSession
@@ -77,6 +79,25 @@ object SparkCommon {
       case e: Exception =>
         logger.error("Error Reading fxxcoursedb.fx_course_table "+e.printStackTrace())
         None
+    }
+  }
+
+  def writeToHiveTable(spark : SparkSession, df : DataFrame, hiveTable : String): Unit = {
+    try {
+      logger.warn("writeToHiveTable started")
+
+      val tmpView = hiveTable+"tempView"
+      df.createOrReplaceTempView(tmpView)
+      //
+
+      val sqlQuery = "create table "+ hiveTable + " as select * from "+ tmpView
+
+      spark.sql(sqlQuery)
+      logger.warn("Finished writing to Hive Table")
+
+    } catch {
+      case e: Exception =>
+      logger.error("Error writing to Hive Table"+e.printStackTrace())
     }
   }
 
