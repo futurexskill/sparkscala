@@ -1,0 +1,11 @@
+  //df.rdd.takeSample(false,targetCount).foreach(println)
+    //val sampleArray  = df.rdd.takeSample(false,targetCount)
+    //val sampleRdd  = spark.sparkContext.parallelize(sampleArray)
+    //ogger.warn("sampleRdd count " + sampleRdd.count())
+
+    df.createOrReplaceTempView("tableName")
+    val sampleDF = spark.sql(s"Select * ,rand() as random from tableName order by random limit ${targetCount}")
+    logger.warn("sampleDF count " + sampleDF.count())
+    sampleDF.show()
+    spark.sql(s"Select * ,rand() as random from tableName order by random limit ${targetCount}").drop("random").show()
+    spark.sql(s"Select * ,rand() as random from tableName order by random limit ${targetCount}").drop("random").show()
