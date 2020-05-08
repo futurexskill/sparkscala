@@ -1,6 +1,6 @@
 import java.util.Properties
 
-import common.{FXJsonParser, PostgresCommon, SparkCommon, SparkTraformer}
+import common.{FXJsonParser, InputConfig, PostgresCommon, SparkCommon, SparkTraformer}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.slf4j.LoggerFactory
 
@@ -19,11 +19,9 @@ object FutureXSparkTransformer {
         System.exit(1)
       }
 
-      val env_name = args(0)
+      val inputConfig : InputConfig = InputConfig(env = args(0),targetDB = args(1))
 
-      logger.info("The Environment is "+env_name )
-
-      val spark = SparkCommon.createSparkSession(env_name).get
+      val spark = SparkCommon.createSparkSession(inputConfig).get
       // Create Course Hive Table
       //SparkCommon.createFutureXCourseHiveTable(spark)
 
@@ -34,21 +32,25 @@ object FutureXSparkTransformer {
 
       val transformedDF1 = SparkTraformer.replaceNullValues(CourseDF)
       transformedDF1.show()
-      //val pgCourseTable = "futureschema.futurex_course"
-      //val pgCourseTable = FXJsonParser.fetchPGTargetTable()
-      //logger.warn("******** pgCourseTable **** is "+pgCourseTable)
 
-      //PostgresCommon.writeDFToPostgresTable(transformedDF1,pgCourseTable)
+      if (inputConfig.targetDB == "pg") {
+        logger.info("Writing to PG Table")
+        val pgCourseTable = FXJsonParser.fetchPGTargetTable()
+        logger.warn("******** pgCourseTable **** is "+pgCourseTable)
 
-      logger.info("Writing to CSV File ")
+        PostgresCommon.writeDFToPostgresTable(transformedDF1,pgCourseTable)
+      } else if (inputConfig.targetDB == "hive") {
+        logger.info("Writing to Hive Table")
 
-      transformedDF1.write.format("csv").save("transformed-df")
+        // Write to a Hive Table
+        SparkCommon.writeToHiveTable(spark,transformedDF1,"customer_transformed")
+        logger.info("Finished writing to Hive Table..in main method")
 
-      logger.info("Writing to Hive Table")
+      }
 
-      // Write to a Hive Table
-      SparkCommon.writeToHiveTable(spark,transformedDF1,"customer_transformed")
-      logger.info("Finished writing to Hive Table..in main method")
+
+      //transformedDF1.write.format("csv").save("transformed-df")
+
 
       //val pgTable = "futureschema.futurex_course_catalog"
       //val pgCourseDataframe : DataFrame = PostgresCommon
