@@ -28,4 +28,13 @@ class SparkTransformerSpec extends FutureXBase {
     assert("Unknown" == author)
   }
 
+  it should "throw NullPointerException" in {
+    try {
+      val df: DataFrame = null
+      val transformedDF = SparkTraformer.replaceNullValues(df)
+    } catch {
+      case e: NullPointerException =>
+        println("NullPointerException caught")
+    }
+  }
 }
