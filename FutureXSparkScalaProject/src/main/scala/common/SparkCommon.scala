@@ -1,17 +1,22 @@
 package common
 
+import exceptions.InvalidEnvironmentException
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.slf4j.LoggerFactory
 
 object SparkCommon {
   private val logger = LoggerFactory.getLogger(getClass.getName)
 
-  def createSparkSession(env_name : String): Option[SparkSession] = {
+  def createSparkSession(inputConfig : InputConfig): Option[SparkSession] = {
     try {
       // Create a Spark Session
       // For Windows
+      if (inputConfig.env != "dev") {
+       throw new InvalidEnvironmentException("Please pass a valid environment")
+      }
+
       logger.info("createSparkSession() started")
-      if (env_name == "dev") {
+      if (inputConfig.env == "dev") {
         logger.info("Environment is Dev. Setting Hadoop Home")
         System.setProperty("hadoop.home.dir", "C:\\winutils")
       }
@@ -34,6 +39,10 @@ object SparkCommon {
       logger.info("Returning the Spark Session")
       Some(spark)
     } catch {
+      case e: InvalidEnvironmentException =>
+        throw new InvalidEnvironmentException("Please pass a valid environment")
+        None
+
       case e: Exception =>
         logger.error("An error has occured in Spark session creation method "+e.printStackTrace())
         System.exit(1)
