@@ -1,6 +1,6 @@
 package common
 
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{AnalysisException, DataFrame, SparkSession}
 
 class SparkTransformerSpec extends FutureXBase {
   val spark = SparkSession.builder.appName("HelloSpark")
@@ -35,6 +35,15 @@ class SparkTransformerSpec extends FutureXBase {
     } catch {
       case e: NullPointerException =>
         println("NullPointerException caught")
+    }
+  }
+
+  it should "also throw NullPointerException" in {
+
+    assertThrows[NullPointerException] {
+      val df: DataFrame = null
+
+      val transformedDF = SparkTraformer.replaceNullValues(df)
     }
   }
 }
