@@ -59,30 +59,47 @@
             <version>3.1.1</version>
             <scope>test</scope>
         </dependency>
+
+
+
     </dependencies>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.3</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
+                        <id>shade-libs</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>FutureXSparkTransformer</mainClass>
-                                </transformer>
-                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>resources/*</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <shadedClassifierName>fat</shadedClassifierName>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.apache.http.client</pattern>
+                                    <shadedPattern>shaded.org.apache.http.client</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-
 </project>
