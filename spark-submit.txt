@@ -1,0 +1,3 @@
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+export YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop
+spark-submit --class FutureXSparkTransformer --master yarn --files "log4j.properties" --deploy-mode cluster FutureXSparkScalaProject-1.0-SNAPSHOT-fat.jar
