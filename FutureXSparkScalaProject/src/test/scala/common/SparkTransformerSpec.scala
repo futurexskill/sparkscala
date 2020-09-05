@@ -7,15 +7,19 @@ class SparkTransformerSpec extends FutureXBase {
     .config("spark.master", "local").enableHiveSupport()
     .getOrCreate()
 
-  behavior of "Spark Transformer"
-
-  it should "replace null value with unknown" in {
+  def fixture = new {
     val df : DataFrame = spark.read
       .option("header", "true")
       .option("inferSchema","true")
       .csv("mock_course_data.csv")
-    df.show()
-    val transformedDF = SparkTraformer.replaceNullValues(df)
+  }
+
+  behavior of "Spark Transformer"
+
+  it should "replace null value with unknown" in {
+
+    val f = fixture
+    val transformedDF = SparkTraformer.replaceNullValues(f.df)
     transformedDF.show()
     val authors = transformedDF
       .filter(transformedDF("course_id")
@@ -47,12 +51,8 @@ class SparkTransformerSpec extends FutureXBase {
     }
   }
   it should "also replace null value with unknown" in {
-    val df : DataFrame = spark.read
-      .option("header", "true")
-      .option("inferSchema","true")
-      .csv("mock_course_data.csv")
-    df.show()
-    val transformedDF = SparkTraformer.replaceNullValues(df)
+    val f = fixture
+    val transformedDF = SparkTraformer.replaceNullValues(f.df)
     transformedDF.show()
     val authors = transformedDF
       .filter(transformedDF("course_id")
@@ -66,12 +66,8 @@ class SparkTransformerSpec extends FutureXBase {
 
   }
   it should "2  also replace null value with unknown" in {
-    val df : DataFrame = spark.read
-      .option("header", "true")
-      .option("inferSchema","true")
-      .csv("mock_course_data.csv")
-    df.show()
-    val transformedDF = SparkTraformer.replaceNullValues(df)
+    val f = fixture
+    val transformedDF = SparkTraformer.replaceNullValues(f.df)
     transformedDF.show()
     val authors = transformedDF
       .filter(transformedDF("course_id")
