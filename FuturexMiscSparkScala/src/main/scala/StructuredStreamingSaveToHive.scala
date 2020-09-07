@@ -22,7 +22,7 @@ object StructuredStreamingSaveToHive {
     val streamDF = spark.readStream.option("header","true").schema(schema).csv("C:\\inputDir")
 
     val query = streamDF.writeStream.outputMode(OutputMode.Append()).format("csv")
-      .option("path","hivelocation").option("checkpointLocation","locatoin1").start()
+      .option("path","hivelocation").option("checkpointLocation","location").start()
 
     query.awaitTermination()
 
