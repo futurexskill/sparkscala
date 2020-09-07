@@ -4,4 +4,10 @@ https://www.udemy.com/course/spark-scala-coding-best-practices-data-pipeline/?re
 
 Watch it for free on Skillshare
 
+Spark Scala
+
 https://skl.sh/2WPsiRe
+
+Structured Streaming
+
+https://skl.sh/3lwA7qp
