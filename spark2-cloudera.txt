@@ -1,0 +1,73 @@
+
+############################## Upgrade to JDK 8 and Spark 2 ##############################
+
+java -version
+
+yum remove java -y
+
+yum install java-1.8.0-openjdk -y
+
+ls /usr/lib/jvm/jre-1.8.0-openjdk.x86_64
+
+export JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk.x86_64
+
+hadoop version
+
+2.6.0
+
+yum install wget
+
+wget https://archive.apache.org/dist/spark/spark-2.4.3/spark-2.4.3-bin-hadoop2.6.tgz
+
+tar -xvf spark-2.4.3-bin-hadoop2.6.tgz
+
+mv spark-2.4.3-bin-hadoop2.6  /usr/local/spark
+
+
+yum install nano
+
+cd /usr/bin
+
+ls *spark*
+
+nano pyspark
+nano spark-submit
+nano spark-shell
+nano spark-executor
+
+(Change to /usr/local/spark)
+
+
+spark-shell >
+ 
+val sampleSeq = Seq((1,"spark"),(2,"Big Data"))
+val df = spark.createDataFrame(sampleSeq).toDF("course id", "course name")
+df.show()
+
+======================================================================
+
+
+
+################# Test Spark with Hive ##########################################################
+
+su hdfs
+hdfs dfs -chmod 777 /tmp
+hdfs dfs -chmod 777 /tmp/hive
+
+su root
+spark-shell
+
+
+val courseDF = spark.sql("select * from fxxcoursedb.fx_course_table")
+
+sampleSeq_table
+spark-shell >
+ 
+val sampleSeq = Seq((1,"spark"),(2,"Big Data"))
+val df = spark.createDataFrame(sampleSeq).toDF("course id", "course name")
+df.show()
+df.createOrReplaceTempView("sampleSeq") 
+
+spark.sql("create table sampleSeq_table as select * from sampleSeq")
+val courseDF = spark.sql("select * from sampleSeq_table")
+
